@@ -1,0 +1,30 @@
+def greet(name):
+    """指定された名前に対して挨拶を行う"""
+    print(f"Hello, {name}!")
+
+def add_numbers(a, b):
+    """二つの数値を受け取り、その和を返す"""
+    return a + b
+
+def is_even(number):
+    """与えられた数が偶数かどうかを判定する"""
+    return number % 2 == 0
+
+def show_user_info(username, age):
+    """ユーザーの名前と年齢を表示する"""
+    print(f"Username: {username}, Age: {age}")
+
+def calculate_difference(x, y):
+    """二つの数値の差を計算して返す"""
+    return x - y
+
+# 関数の呼び出し例
+greet("Alice")
+result = add_numbers(5, 3)
+print(f"Sum: {result}")
+even_check = is_even(4)
+print(f"Is 4 even? {even_check}")
+show_user_info("Bob", 30)
+difference = calculate_difference(10, 6)
+print(f"Difference: {difference}")
+
