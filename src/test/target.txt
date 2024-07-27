@@ -27,4 +27,3 @@ print(f"Is 4 even? {even_check}")
 show_user_info("Bob", 30)
 difference = calculate_difference(10, 6)
 print(f"Difference: {difference}")
-

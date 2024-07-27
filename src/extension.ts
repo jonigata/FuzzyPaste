@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
         const clipboardContent = await vscode.env.clipboard.readText();
 
         const mergedText = await showNotificationWithProgress(
-          "AI merging...", 
+          `AI merging...`, 
           async (progress: vscode.Progress<{ message?: string; increment?: number }>, token: vscode.CancellationToken) => {
             return postToAi(
               vscode.workspace.getConfiguration('smartPaste'), 

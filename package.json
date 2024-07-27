@@ -15,7 +15,7 @@
     "commands": [
       {
         "command": "smartpaste.smartPaste",
-        "title": "smartPaste"
+        "title": "Smart Paste"
       }
     ],
     "configuration": {
@@ -85,6 +85,6 @@
   "dependencies": {
     "diff": "^5.2.0",
     "openai": "^4.53.0",
-    "typai": "^0.0.5"
+    "typai": "^0.0.8"
   }
 }

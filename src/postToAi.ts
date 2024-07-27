@@ -5,13 +5,14 @@ import OpenAI from 'openai';
 
 const prompt = `Please merge the following two texts appropriately:
 The first document is a complete document.
-The second document is a document with potential ambiguity.
-Interpret the notes in the second document and insert/overwrite them into the first document as necessary.
-Try not to modify line breaks and other formatting.
+Please insert the differences written in the second document into the first document 
+while maintaining the first document as much as possible.
+Don't insert any additional newline.
+If there is no difference, please return the first document as it is.
 "%=%="... is a just a separator and should not be included in the final document.`;
 
 let postSample = false;
-postSample = true;
+// postSample = true;
 
 export async function postToAi(
   config: vscode.WorkspaceConfiguration, 
@@ -30,7 +31,7 @@ export async function postToAi(
     
     // 現在のドキュメントの全テキストを取得
     const Merge = t.type({
-      mergedDocument: t.string,
+      mergedDocument: t.string
     });
     type MergeType = t.TypeOf<typeof Merge>;
     const tool: Tool<MergeType> = {
@@ -40,28 +41,33 @@ export async function postToAi(
     };
 
     // AIにマージを依頼
+    const wholePrompt = `${prompt}
+  
+%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+${originalDocument}
+%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+
+2. Clipboard document:
+%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+${clipboardContent}
+%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+
+Please return the merged result.`;
+    console.log(wholePrompt);
+
     const r = await queryFormatted<MergeType>(
       openai,
       model,
-      `${prompt}
-      
-      %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-      ${originalDocument}
-      %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-
-      2. Clipboard document:
-      %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-      ${clipboardContent}
-      %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-
-      Please return the merged result.`, 
-      tool
+      wholePrompt, 
+      tool,
+      { verbose: {maxLength: Infinity, indent: 2} }
     );
 
     let mergedText = r.parameters.mergedDocument;
     if (!mergedText.endsWith("\n")) {
       mergedText += "\n";
     }
+    console.log(mergedText);
     return mergedText;
   } else {
     return `def greet(name):
