@@ -10,57 +10,61 @@ Interpret the notes in the second document and insert/overwrite them into the fi
 Try not to modify line breaks and other formatting.
 "%=%="... is a just a separator and should not be included in the final document.`;
 
+let postSample = false;
+postSample = true;
+
 export async function postToAi(
   config: vscode.WorkspaceConfiguration, 
   originalDocument: string, 
   clipboardContent: string): Promise<string> {
 
-  const apiKey = config.get<string>('apiKey');
-  if (!apiKey) {
-    throw new Error('API key is not set');
-  }
-  const baseURL = config.get<string>('baseURL') ?? "https://api.openai.com/v1";
-  const model = config.get<string>('model') ?? "gpt-4o-mini";
-  console.log(model);
-  const openai = new OpenAI({apiKey, baseURL});
-  
-  // 現在のドキュメントの全テキストを取得
-  const Merge = t.type({
-    mergedDocument: t.string,
-  });
-  type MergeType = t.TypeOf<typeof Merge>;
-  const tool: Tool<MergeType> = {
-    name: "sendMerged",
-    description: "send merge result",
-    parameters: Merge
-  };
-
-  // AIにマージを依頼
-  const r = await queryFormatted<MergeType>(
-    openai,
-    model,
-    `${prompt}
+  if (!postSample) {
+    const apiKey = config.get<string>('apiKey');
+    if (!apiKey) {
+      throw new Error('API key is not set');
+    }
+    const baseURL = config.get<string>('baseURL') ?? "https://api.openai.com/v1";
+    const model = config.get<string>('model') ?? "gpt-4o-mini";
+    console.log(model);
+    const openai = new OpenAI({apiKey, baseURL});
     
-    %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-    ${originalDocument}
-    %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+    // 現在のドキュメントの全テキストを取得
+    const Merge = t.type({
+      mergedDocument: t.string,
+    });
+    type MergeType = t.TypeOf<typeof Merge>;
+    const tool: Tool<MergeType> = {
+      name: "sendMerged",
+      description: "send merge result",
+      parameters: Merge
+    };
 
-    2. Clipboard document:
-    %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-    ${clipboardContent}
-    %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+    // AIにマージを依頼
+    const r = await queryFormatted<MergeType>(
+      openai,
+      model,
+      `${prompt}
+      
+      %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+      ${originalDocument}
+      %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
 
-    Please return the merged result.`, 
-    tool
-  );
+      2. Clipboard document:
+      %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+      ${clipboardContent}
+      %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
 
-  let mergedText = r.parameters.mergedDocument;
-  if (!mergedText.endsWith("\n")) {
-    mergedText += "\n";
-  }
-  return mergedText;
-/*
-  return `def greet(name):
+      Please return the merged result.`, 
+      tool
+    );
+
+    let mergedText = r.parameters.mergedDocument;
+    if (!mergedText.endsWith("\n")) {
+      mergedText += "\n";
+    }
+    return mergedText;
+  } else {
+    return `def greet(name):
     """指定された名前に対して挨拶を行う"""
     print(f"Hello, {name}!")
 
@@ -80,6 +84,6 @@ def calculate_difference(x, y):
     """二つの数値の差を計算して返す"""
     return x - y
 `;
-*/
+  }
 
 }

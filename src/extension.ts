@@ -15,7 +15,12 @@ export function activate(context: vscode.ExtensionContext) {
   // cursormanager
   vscode.workspace.onDidChangeTextDocument(
     (event: vscode.TextDocumentChangeEvent) => {
-      cursorManager.updateCursors(event);
+      if (event.reason === vscode.TextDocumentChangeReason.Undo ||
+          event.reason === vscode.TextDocumentChangeReason.Redo) {
+        updateDiffBlockCursors(vscode.window.activeTextEditor!);
+      } else {
+        cursorManager.updateCursors(event);
+      }
     },
     null,
     context.subscriptions
