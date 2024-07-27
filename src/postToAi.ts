@@ -40,25 +40,17 @@ export async function postToAi(
       parameters: Merge
     };
 
-    // AIにマージを依頼
-    const wholePrompt = `${prompt}
-  
-%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-${originalDocument}
-%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-
-2. Clipboard document:
-%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-${clipboardContent}
-%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-
-Please return the merged result.`;
-    console.log(wholePrompt);
-
     const r = await queryFormatted<MergeType>(
       openai,
       model,
-      wholePrompt, 
+      [
+        {role: "system", content: prompt},
+        {role: "user", content: "1st document:\n" + originalDocument},
+        {role: "assistant", content: "ok"},
+        {role: "user", content: "2nd document:\n" + clipboardContent},
+        {role: "assistant", content: "ok"},
+        {role: "user", content: "Please return the merged result."}
+      ],
       tool,
       { verbose: {maxLength: Infinity, indent: 2} }
     );
