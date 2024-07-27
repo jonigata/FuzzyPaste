@@ -2,8 +2,9 @@ import * as vscode from "vscode";
 import { postToAi } from "./postToAi";
 import { BlockDecorator, makeDiff, makePatchedText, findDiffBlocks, makeDiffBlockCursors } from "./inlineDiff";
 import { DiffCodeLensProvider } from "./codeLens";
-import { DiffBlock, DiffBlockCursors } from "./diffBlock";
+import { DiffBlockCursors } from "./diffBlock";
 import { CursorManager } from "./cursor";
+import { showNotificationWithProgress } from "./progress";
 
 export function activate(context: vscode.ExtensionContext) {
   let diffBlockCursors: DiffBlockCursors[] = [];
@@ -49,13 +50,16 @@ export function activate(context: vscode.ExtensionContext) {
         const originalDocument = editor.document.getText();
         const clipboardContent = await vscode.env.clipboard.readText();
 
-        const mergedText = await postToAi(
-          vscode.workspace.getConfiguration('fuzzypaste'), 
-          originalDocument, 
-          clipboardContent);
+        const mergedText = await showNotificationWithProgress(
+          "AI merging...", 
+          async (progress: vscode.Progress<{ message?: string; increment?: number }>, token: vscode.CancellationToken) => {
+            return postToAi(
+              vscode.workspace.getConfiguration('fuzzyPaste'), 
+              originalDocument, 
+              clipboardContent);
+          });
 
-
-        const blocks = makeDiff(originalDocument, mergedText);
+        const blocks = makeDiff(originalDocument, mergedText!);
         const patchedText = makePatchedText(blocks);
 
         // マージされたテキストでドキュメントを置き換え
