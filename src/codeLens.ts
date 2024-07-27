@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { DiffBlockCursors } from "./diffBlock";
+import { Cursor } from "./cursor";
 
 export class DiffCodeLensProvider implements vscode.CodeLensProvider {
   private diffBlocks: DiffBlockCursors[] = [];
@@ -15,50 +16,28 @@ export class DiffCodeLensProvider implements vscode.CodeLensProvider {
     console.log("provideCodeLenses", this.diffBlocks.length);
 
     const codeLenses: vscode.CodeLens[] = [];
+    function codeLens(range: vscode.Range, title: string, command: string, args: any) {
+      codeLenses.push(new vscode.CodeLens(range, {
+        title: title,
+        command: "fuzzypaste." + command,
+        arguments: args,
+      }));
+    }
 
-    const range = new vscode.Range(
-      document.positionAt(0),
-      document.positionAt(1)
-    );
+    if (0 < this.diffBlocks.length) {
+      const range = new vscode.Range(document.positionAt(0),document.positionAt(1));
+      codeLens(range, "Accept All", "applyAllDiff", [true]);
+      codeLens(range, "Reject All", "applyAllDiff", [false]);
 
-    codeLenses.push(
-      new vscode.CodeLens(range, {
-        title: "Accept All",
-        command: "fuzzypaste.applyAllDiff",
-        arguments: [true],
-      })
-    );
-
-    codeLenses.push(
-      new vscode.CodeLens(range, {
-        title: "Reject All",
-        command: "fuzzypaste.applyAllDiff",
-        arguments: [false],
-      })
-    );
-
-    this.diffBlocks.forEach((block) => {
-      const range = new vscode.Range(
-        document.positionAt(block.fullRange[0].index),
-        document.positionAt(block.fullRange[0].index + 1)
-      );
-
-      codeLenses.push(
-        new vscode.CodeLens(range, {
-          title: "Accept",
-          command: "fuzzypaste.applyDiff",
-          arguments: [block, "upperBlock"],
-        })
-      );
-
-      codeLenses.push(
-        new vscode.CodeLens(range, {
-          title: "Reject",
-          command: "fuzzypaste.applyDiff",
-          arguments: [block, "lowerBlock"],
-        })
-      );
-    });
+      this.diffBlocks.forEach((block) => {
+        const range = new vscode.Range(
+          document.positionAt(block.fullRange[0].index),
+          document.positionAt(block.fullRange[0].index + 1)
+        );
+        codeLens(range, "Accept", "applyDiff", [block, "upperBlock"]);
+        codeLens(range, "Reject", "applyDiff", [block, "lowerBlock"]);
+      });
+    }
 
     return codeLenses;
   }

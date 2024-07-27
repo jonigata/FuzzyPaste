@@ -7,7 +7,7 @@ const prompt = `Please merge the following two texts appropriately:
 The first document is a complete document.
 The second document is a document with potential ambiguity.
 Interpret the notes in the second document and insert/overwrite them into the first document as necessary.
-Try not to modify line breaks, and other formatting.
+Try not to modify line breaks and other formatting.
 "%=%="... is a just a separator and should not be included in the final document.`;
 
 export async function postToAi(

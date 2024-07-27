@@ -5,3 +5,4 @@ def add_numbers(a, b, c):
 def show_user_info(username, age, address):
     """ユーザーの名前、年齢、住所を表示する"""
     print(f"Username: {username}, Age: {age}, Address: {address}")
+    
