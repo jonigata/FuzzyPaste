@@ -16,7 +16,28 @@ export class DiffCodeLensProvider implements vscode.CodeLensProvider {
 
     const codeLenses: vscode.CodeLens[] = [];
 
-    this.diffBlocks.forEach((block, index) => {
+    const range = new vscode.Range(
+      document.positionAt(0),
+      document.positionAt(1)
+    );
+
+    codeLenses.push(
+      new vscode.CodeLens(range, {
+        title: "Accept All",
+        command: "fuzzypaste.applyAllDiff",
+        arguments: [true],
+      })
+    );
+
+    codeLenses.push(
+      new vscode.CodeLens(range, {
+        title: "Reject All",
+        command: "fuzzypaste.applyAllDiff",
+        arguments: [false],
+      })
+    );
+
+    this.diffBlocks.forEach((block) => {
       const range = new vscode.Range(
         document.positionAt(block.fullRange[0].index),
         document.positionAt(block.fullRange[0].index + 1)

@@ -112,6 +112,42 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // apply all
+  context.subscriptions.push(
+    vscode.commands.registerCommand('fuzzypaste.applyAllDiff', async (isAccept: boolean) => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage("No active text editor");
+        return;
+      }
+
+      const a = diffBlockCursors;
+      a.reverse();
+      const editing: {fullRange: vscode.Range, adoptRange: vscode.Range}[] = [];
+      for (const block of a) {
+        const fullRange = new vscode.Range(
+          editor.document.positionAt(block.fullRange[0].index),
+          editor.document.positionAt(block.fullRange[1].index)
+        );
+          const adoptBlock = isAccept ? block.upperBlock : block.lowerBlock;
+        const adoptRange = new vscode.Range(
+          editor.document.positionAt(adoptBlock[0].index),
+          editor.document.positionAt(adoptBlock[1].index)
+        );
+  
+        editing.push({fullRange, adoptRange});
+      }
+      await editor.edit(editBuilder => {
+        for (const {fullRange, adoptRange} of editing) {
+          editBuilder.replace(fullRange, editor.document.getText(adoptRange));
+        }
+      });
+
+      updateDiffBlockCursors(editor);
+    })
+  );
+  
+
 }
 
 export function deactivate() {}

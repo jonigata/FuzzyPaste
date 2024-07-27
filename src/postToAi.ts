@@ -14,7 +14,7 @@ export async function postToAi(
   config: vscode.WorkspaceConfiguration, 
   originalDocument: string, 
   clipboardContent: string): Promise<string> {
-
+/*
   const apiKey = config.get<string>('apiKey');
   if (!apiKey) {
     throw new Error('API key is not set');
@@ -56,8 +56,8 @@ export async function postToAi(
 
   const mergedText = r.parameters.mergedDocument;
   return mergedText;
+*/
 
-/* 
   return `def greet(name):
     """指定された名前に対して挨拶を行う"""
     print(f"Hello, {name}!")
@@ -78,5 +78,5 @@ def calculate_difference(x, y):
     """二つの数値の差を計算して返す"""
     return x - y
 `;
-*/
+
 }
