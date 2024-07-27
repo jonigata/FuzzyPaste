@@ -43,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   let disposable = vscode.commands.registerCommand(
-    "fuzzypaste.fuzzyPaste",
+    "smartpaste.smartPaste",
     async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
@@ -59,7 +59,7 @@ export function activate(context: vscode.ExtensionContext) {
           "AI merging...", 
           async (progress: vscode.Progress<{ message?: string; increment?: number }>, token: vscode.CancellationToken) => {
             return postToAi(
-              vscode.workspace.getConfiguration('fuzzyPaste'), 
+              vscode.workspace.getConfiguration('smartPaste'), 
               originalDocument, 
               clipboardContent);
           });
@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         vscode.window.showInformationMessage("Content merged successfully");
       } catch (error) {
-        console.error('Error in fuzzyPaste:', error);
+        console.error('Error in smartPaste:', error);
         let errorMessage = 'An unexpected error occurred';
         if (error instanceof Error) {
           errorMessage = error.message;
@@ -91,7 +91,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('fuzzypaste.applyDiff', async (block: DiffBlockCursors, which: string) => {
+    vscode.commands.registerCommand('smartpaste.applyDiff', async (block: DiffBlockCursors, which: string) => {
       // 削除して追加
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
@@ -119,7 +119,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // apply all
   context.subscriptions.push(
-    vscode.commands.registerCommand('fuzzypaste.applyAllDiff', async (isAccept: boolean) => {
+    vscode.commands.registerCommand('smartpaste.applyAllDiff', async (isAccept: boolean) => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         vscode.window.showErrorMessage("No active text editor");

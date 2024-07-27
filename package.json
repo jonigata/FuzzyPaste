@@ -1,6 +1,6 @@
 {
-  "name": "fuzzypaste",
-  "displayName": "FuzzyPaste",
+  "name": "smartpaste",
+  "displayName": "smartPaste",
   "description": "Paste using AI",
   "version": "0.0.1",
   "engines": {
@@ -14,24 +14,24 @@
   "contributes": {
     "commands": [
       {
-        "command": "fuzzypaste.fuzzyPaste",
-        "title": "FuzzyPaste"
+        "command": "smartpaste.smartPaste",
+        "title": "smartPaste"
       }
     ],
     "configuration": {
-      "title": "FuzzyPaste",
+      "title": "smartPaste",
       "properties": {
-        "fuzzyPaste.apiKey": {
+        "smartPaste.apiKey": {
           "type": "string",
           "default": "",
           "description": "API Key for OpenAI"
         },
-        "fuzzyPaste.baseURL": {
+        "smartPaste.baseURL": {
           "type": "string",
           "default": "https://api.openai.com/v1",
           "description": "Base URL for OpenAI API"
         },
-        "fuzzyPaste.model": {
+        "smartPaste.model": {
           "type": "string",
           "default": "gpt-4o-mini",
           "anyOf": [
