@@ -7,14 +7,14 @@ const prompt = `Please merge the following two texts appropriately:
 The first document is a complete document.
 The second document is a document with potential ambiguity.
 Interpret the notes in the second document and insert/overwrite them into the first document as necessary.
-Try not to modify line breaks and other formatting.
+Try not to modify line breaks, and other formatting.
 "%=%="... is a just a separator and should not be included in the final document.`;
 
 export async function postToAi(
   config: vscode.WorkspaceConfiguration, 
   originalDocument: string, 
   clipboardContent: string): Promise<string> {
-/*
+
   const apiKey = config.get<string>('apiKey');
   if (!apiKey) {
     throw new Error('API key is not set');
@@ -54,10 +54,12 @@ export async function postToAi(
     tool
   );
 
-  const mergedText = r.parameters.mergedDocument;
+  let mergedText = r.parameters.mergedDocument;
+  if (!mergedText.endsWith("\n")) {
+    mergedText += "\n";
+  }
   return mergedText;
-*/
-
+/*
   return `def greet(name):
     """指定された名前に対して挨拶を行う"""
     print(f"Hello, {name}!")
@@ -78,5 +80,6 @@ def calculate_difference(x, y):
     """二つの数値の差を計算して返す"""
     return x - y
 `;
+*/
 
 }
