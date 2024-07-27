@@ -36,7 +36,10 @@
           "default": "gpt-4o-mini",
           "anyOf": [
             {
-              "enum": ["gpt-4o", "gpt-4o-mini"],
+              "enum": [
+                "gpt-4o",
+                "gpt-4o-mini"
+              ],
               "enumDescriptions": [
                 "GPT-4o",
                 "GPT-4o Mini"
@@ -66,6 +69,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/diff": "^5.2.1",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
     "@types/vscode": "^1.91.0",
@@ -79,6 +83,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "diff": "^5.2.0",
     "openai": "^4.53.0",
     "typai": "^0.0.5"
   }

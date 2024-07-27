@@ -1,9 +1,41 @@
 import * as vscode from "vscode";
-import * as t from 'io-ts';
-import { queryFormatted, type Tool } from 'typai';
-import OpenAI from 'openai';
+import { postToAi } from "./postToAi";
+import { BlockDecorator, makeDiff, makePatchedText, findDiffBlocks, makeDiffBlockCursors } from "./inlineDiff";
+import { DiffCodeLensProvider } from "./codeLens";
+import { DiffBlock, DiffBlockCursors } from "./diffBlock";
+import { CursorManager } from "./cursor";
 
 export function activate(context: vscode.ExtensionContext) {
+  let diffBlockCursors: DiffBlockCursors[] = [];
+  const cursorManager = new CursorManager();
+  const blockDecorator = new BlockDecorator();
+  const diffCodeLensProvider = new DiffCodeLensProvider();
+
+  // cursormanager
+  vscode.workspace.onDidChangeTextDocument(
+    (event: vscode.TextDocumentChangeEvent) => {
+      cursorManager.updateCursors(event);
+    },
+    null,
+    context.subscriptions
+  );
+
+  // codelens
+  context.subscriptions.push(
+      vscode.languages.registerCodeLensProvider(
+          { scheme: 'file' },
+          diffCodeLensProvider
+      )
+  );
+
+  function updateDiffBlockCursors(editor: vscode.TextEditor) {
+    const diffBlocks = findDiffBlocks(editor.document);
+    diffBlockCursors = makeDiffBlockCursors(cursorManager, diffBlocks);
+
+    blockDecorator.updateDecorations(editor, diffBlockCursors);
+    diffCodeLensProvider.updateDiffBlocks(diffBlockCursors);
+  }
+
   let disposable = vscode.commands.registerCommand(
     "fuzzypaste.fuzzyPaste",
     async () => {
@@ -14,65 +46,27 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       try {
-        const config = vscode.workspace.getConfiguration('fuzzyPaste');
-        const apiKey = config.get<string>('apiKey');
-        if (!apiKey) {
-          throw new Error('API key is not set');
-        }
-        const baseURL = config.get<string>('baseURL') ?? "https://api.openai.com/v1";
-        const model = config.get<string>('model') ?? "gpt-4-0125-preview";
-        const openai = new OpenAI({apiKey, baseURL});
-        
-        // 現在のドキュメントの全テキストを取得
-        const fullText = editor.document.getText();
-        
-        // クリップボードの内容を取得
+        const originalDocument = editor.document.getText();
         const clipboardContent = await vscode.env.clipboard.readText();
-        
-        const Merge = t.type({
-          mergedDocument: t.string,
-        });
-        type MergeType = t.TypeOf<typeof Merge>;
-        const tool: Tool<MergeType> = {
-          name: "sendMerged",
-          description: "send merge result",
-          parameters: Merge
-        };
 
-        // AIにマージを依頼
-        const r = await queryFormatted<MergeType>(
-          openai,
-          model,
-          `Please merge the following two texts appropriately:
-          The first document is a complete document.
-          The second document is a document with potential ambiguity.
-          Interpret the notes in the second document and insert/overwrite them into the first document as necessary.
-          
+        const mergedText = await postToAi(
+          vscode.workspace.getConfiguration('fuzzypaste'), 
+          originalDocument, 
+          clipboardContent);
 
-          1. Current document:
-          %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-          ${fullText}
-          %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
 
-          2. Clipboard document:
-          %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
-          ${clipboardContent}
-          %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
+        const blocks = makeDiff(originalDocument, mergedText);
+        const patchedText = makePatchedText(blocks);
 
-          Please return the merged result.`, 
-          tool
+        // マージされたテキストでドキュメントを置き換え
+        const fullRange = new vscode.Range(
+          editor.document.positionAt(0),
+          editor.document.positionAt(editor.document.getText().length)
         );
-
-        const mergedText = r.parameters.mergedDocument;
-
-        // マージ結果で全テキストを置き換え
-        await editor.edit((editBuilder) => {
-          const fullRange = new vscode.Range(
-            editor.document.positionAt(0),
-            editor.document.positionAt(editor.document.getText().length)
-          );
-          editBuilder.replace(fullRange, mergedText);
+        await editor.edit(editBuilder => {
+          editBuilder.replace(fullRange, patchedText);
         });
+        updateDiffBlockCursors(editor);
 
         vscode.window.showInformationMessage("Content merged successfully");
       } catch (error) {
@@ -81,20 +75,39 @@ export function activate(context: vscode.ExtensionContext) {
         if (error instanceof Error) {
           errorMessage = error.message;
         }
-        // エラーの種類に応じて異なるメッセージを表示
-        if (errorMessage.includes('API key')) {
-          vscode.window.showErrorMessage('Please set your OpenAI API key in the extension settings.');
-        } else if (errorMessage.includes('Rate limit')) {
-          vscode.window.showErrorMessage('OpenAI API rate limit exceeded. Please try again later.');
-        } else if (errorMessage.includes('network')) {
-          vscode.window.showErrorMessage('Network error occurred. Please check your internet connection.');
-        } else {
-          vscode.window.showErrorMessage(`Error: ${errorMessage}`);
-        }
+        vscode.window.showErrorMessage(errorMessage);
       }
     }
   );
   context.subscriptions.push(disposable);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('fuzzypaste.applyDiff', async (block: DiffBlockCursors, which: string) => {
+      // 削除して追加
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage("No active text editor");
+        return;
+      }
+
+      const fullRange = new vscode.Range(
+        editor.document.positionAt(block.fullRange[0].index),
+        editor.document.positionAt(block.fullRange[1].index)
+      );
+      const adoptBlock = which === "upperBlock" ? block.upperBlock : block.lowerBlock;
+      const adoptRange = new vscode.Range(
+        editor.document.positionAt(adoptBlock[0].index),
+        editor.document.positionAt(adoptBlock[1].index)
+      );
+
+      await editor.edit(editBuilder => {
+        editBuilder.replace(fullRange, editor.document.getText(adoptRange));
+      });
+
+      updateDiffBlockCursors(editor);
+    })
+  );
+
 }
 
 export function deactivate() {}
