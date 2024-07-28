@@ -10,9 +10,7 @@ SmartPaste is a VSCode extension that enhances your pasting experience by intell
 - Undo/Redo support
 - Progress indicator during AI processing
 
-![SmartPaste in action](images/smartpaste-demo.gif)
-
-> Note: The above image is a placeholder. Replace it with an actual screenshot or animation of your extension in use.
+![SmartPaste in action](https://raw.githubusercontent.com/jonigata/SmartPaste/main/smartpaste.gif)
 
 ## Requirements
 
