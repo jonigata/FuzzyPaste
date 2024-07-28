@@ -16,6 +16,24 @@
       {
         "command": "smartpaste.smartPaste",
         "title": "Smart Paste"
+      },
+      {
+        "command": "smartpaste.applyDiff",
+        "title": "SmartPaste: Apply Diff",
+        "enablement": "never"
+      },
+      {
+        "command": "smartpaste.applyAllDiff",
+        "title": "SmartPaste: Apply All Diff",
+        "enablement": "never"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "smartpaste.smartPaste",
+        "key": "ctrl+shift+alt+v",
+        "mac": "cmd+shift+alt+v",
+        "when": "editorTextFocus"
       }
     ],
     "configuration": {
@@ -34,21 +52,6 @@
         "smartPaste.model": {
           "type": "string",
           "default": "gpt-4o-mini",
-          "anyOf": [
-            {
-              "enum": [
-                "gpt-4o",
-                "gpt-4o-mini"
-              ],
-              "enumDescriptions": [
-                "GPT-4o",
-                "GPT-4o Mini"
-              ]
-            },
-            {
-              "type": "string"
-            }
-          ],
           "description": "OpenAI model to use"
         }
       }

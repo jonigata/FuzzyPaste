@@ -18,15 +18,14 @@ export async function showNotificationWithProgress<T>(
           cancellable: true
       }, async (progress, token) => {
           token.onCancellationRequested(() => {
-              reject(new Error("ユーザーが処理をキャンセルしました"));
+              reject(new Error("The user canceled the process"));
           });
 
           try {
-              const result = await task(progress, token);
-              vscode.window.showInformationMessage("処理が完了しました。");
-              resolve(result);
+            const result = await task(progress, token);
+            resolve(result);
           } catch (error) {
-              vscode.window.showErrorMessage(`処理が失敗しました: ${error}`);
+              vscode.window.showErrorMessage(`The process has failed: ${error}`);
               reject(error);
           } finally {
               notificationPromise = undefined;

@@ -1,71 +1,129 @@
-# smartpaste README
+# SmartPaste
 
-This is the README for your extension "smartpaste". After writing up a brief description, we recommend including the following sections.
+SmartPaste is a VSCode extension that enhances your pasting experience by intelligently merging clipboard content with your current document using AI. It provides an interactive diff view, allowing you to easily review and apply changes.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- AI-powered merging of clipboard content with the current document
+- Interactive diff view for easy review of changes
+- Apply changes selectively or all at once
+- Undo/Redo support
+- Progress indicator during AI processing
 
-For example if there is an image subfolder under your extension project workspace:
+![SmartPaste in action](images/smartpaste-demo.gif)
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+> Note: The above image is a placeholder. Replace it with an actual screenshot or animation of your extension in use.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- VSCode version 1.60.0 or higher
+- An active internet connection for AI-powered merging
+- OpenAI (or openrouter) API key
+
+## Installation
+
+1. Open VSCode
+2. Go to the Extensions view (Ctrl+Shift+X)
+3. Search for "SmartPaste"
+4. Click Install
+
+## Usage
+
+SmartPaste can be activated in two ways:
+
+1. Command Palette: Open the Command Palette (Ctrl+Shift+P or Cmd+Shift+P on Mac) and search for "SmartPaste: Smart Paste".
+
+2. Keyboard Shortcut: By default, SmartPaste is bound to `Ctrl+Shift+Alt+V`.
+
+To use SmartPaste:
+
+1. Copy some text to your clipboard
+2. In VSCode, place your cursor where you want to paste
+3. Use the keyboard shortcut `Ctrl+Shift+Alt+V` or the Command Palette to activate SmartPaste
+4. The extension will merge the clipboard content with your document using AI
+5. Review the changes in the diff view
+6. Use the CodeLens actions to apply or reject changes
+
+### Customizing the Keyboard Shortcut
+
+If you wish to change the default keyboard shortcut:
+
+1. Open the Command Palette (Ctrl+Shift+P or Cmd+Shift+P on Mac)
+2. Type "Preferences: Open Keyboard Shortcuts"
+3. Search for "smartpaste.smartPaste"
+4. Click on the pencil icon next to the current binding and enter your preferred shortcut
+
+### Commands
+
+- `smartpaste.smartPaste`: Initiate the smart paste process
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* `smartPaste.apiKey`: API Key for OpenAI (required)
+* `smartPaste.baseURL`: Base URL for OpenAI API (default: "https://api.openai.com/v1")
+* `smartPaste.model`: OpenAI model to use (default: "gpt-4o-mini")
+
+To configure these settings:
+
+1. Open VSCode Settings (File > Preferences > Settings)
+2. Search for "SmartPaste"
+3. Enter your OpenAI API key in the "API Key" field
+4. Optionally, adjust the base URL and model as needed
+
+## OpenRouter Support
+
+SmartPaste now supports OpenRouter, allowing you to use a variety of AI models beyond OpenAI's offerings.
+
+To use OpenRouter:
+
+1. Sign up for an account at [OpenRouter](https://openrouter.ai/)
+2. Obtain your API key from OpenRouter
+3. Update your SmartPaste settings:
+   - Set `smartPaste.baseURL` to "https://openrouter.ai/api/v1"
+   - Set `smartPaste.apiKey` to your OpenRouter API key
+   - Choose your preferred model and set it in `smartPaste.model`
+
+Example configuration for using OpenRouter:
+
+```json
+{
+  "smartPaste.baseURL": "https://openrouter.ai/api/v1",
+  "smartPaste.apiKey": "your-openrouter-api-key",
+  "smartPaste.model": "openai/gpt-3.5-turbo"
+}
+```
+
+Note: Available models may vary. Check OpenRouter's documentation for the latest list of supported models.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- The extension may slow down on very large files
+- Occasionally, the AI might produce unexpected merge results
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
+Initial release of SmartPaste
 
-### 1.0.1
+## Contributing
 
-Fixed issue #.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-### 1.1.0
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Added features X, Y, and Z.
+## License
+
+Distributed under the MIT License. See `LICENSE` file for more information.
 
 ---
 
-## Following extension guidelines
+For more information, please visit the [GitHub repository](https://github.com/jonigata/SmartPaste).
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Enjoy using SmartPaste!**
