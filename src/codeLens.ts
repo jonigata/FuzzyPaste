@@ -19,7 +19,7 @@ export class DiffCodeLensProvider implements vscode.CodeLensProvider {
     function codeLens(range: vscode.Range, title: string, command: string, args: any) {
       codeLenses.push(new vscode.CodeLens(range, {
         title: title,
-        command: "smartpaste." + command,
+        command: "smoothpaste." + command,
         arguments: args,
       }));
     }

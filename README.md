@@ -1,6 +1,51 @@
-# SmartPaste
+# SmoothPaste
 
-SmartPaste is a VSCode extension that enhances your pasting experience by intelligently merging clipboard content with your current document using AI. It provides an interactive diff view, allowing you to easily review and apply changes.
+SmoothPaste is a VSCode extension that enhances your pasting experience by intelligently merging clipboard content with your current document using AI. It provides an interactive diff view, allowing you to easily review and apply changes.
+
+## Key Feature
+
+SmoothPaste excels at applying partial code changes while intelligently preserving the rest of your document. Here's a quick example:
+
+### Original Document (DocumentA.txt):
+```python
+def process_data(data):
+    result = []
+    for item in data:
+        if item > 0:
+            result.append(item * 2)
+    return result
+
+# Usage
+data = [1, -2, 3, -4, 5]
+processed = process_data(data)
+print(processed)
+```
+
+### Clipboard Content:
+```python
+def process_data(data):
+    result = []
+    for item in data:
+        result.append(abs(item) * 2)  # Handle both positive and negative numbers
+    return result
+# The rest remains the same
+```
+
+### Result After Using SmoothPaste:
+```python
+def process_data(data):
+    result = []
+    for item in data:
+        result.append(abs(item) * 2)  # Handle both positive and negative numbers
+    return result
+
+# Usage
+data = [1, -2, 3, -4, 5]
+processed = process_data(data)
+print(processed)
+```
+
+SmoothPaste intelligently applies the changes from your clipboard, understanding that "The rest remains the same" means preserving the unmodified parts of your original document.
 
 ## Features
 
@@ -10,7 +55,7 @@ SmartPaste is a VSCode extension that enhances your pasting experience by intell
 - Undo/Redo support
 - Progress indicator during AI processing
 
-![SmartPaste in action](https://raw.githubusercontent.com/jonigata/SmartPaste/main/smartpaste.gif)
+![SmoothPaste in action](https://raw.githubusercontent.com/jonigata/SmoothPaste/main/smoothpaste.gif)
 
 ## Requirements
 
@@ -22,22 +67,22 @@ SmartPaste is a VSCode extension that enhances your pasting experience by intell
 
 1. Open VSCode
 2. Go to the Extensions view (Ctrl+Shift+X)
-3. Search for "SmartPaste"
+3. Search for "SmoothPaste"
 4. Click Install
 
 ## Usage
 
-SmartPaste can be activated in two ways:
+SmoothPaste can be activated in two ways:
 
-1. Command Palette: Open the Command Palette (Ctrl+Shift+P or Cmd+Shift+P on Mac) and search for "SmartPaste: Smart Paste".
+1. Command Palette: Open the Command Palette (Ctrl+Shift+P or Cmd+Shift+P on Mac) and search for "SmoothPaste: Smooth Paste".
 
-2. Keyboard Shortcut: By default, SmartPaste is bound to `Ctrl+Shift+Alt+V`.
+2. Keyboard Shortcut: By default, SmoothPaste is bound to `Ctrl+Shift+Alt+V`.
 
-To use SmartPaste:
+To use SmoothPaste:
 
 1. Copy some text to your clipboard
 2. In VSCode, place your cursor where you want to paste
-3. Use the keyboard shortcut `Ctrl+Shift+Alt+V` or the Command Palette to activate SmartPaste
+3. Use the keyboard shortcut `Ctrl+Shift+Alt+V` or the Command Palette to activate SmoothPaste
 4. The extension will merge the clipboard content with your document using AI
 5. Review the changes in the diff view
 6. Use the CodeLens actions to apply or reject changes
@@ -48,48 +93,48 @@ If you wish to change the default keyboard shortcut:
 
 1. Open the Command Palette (Ctrl+Shift+P or Cmd+Shift+P on Mac)
 2. Type "Preferences: Open Keyboard Shortcuts"
-3. Search for "smartpaste.smartPaste"
+3. Search for "smoothpaste.smoothPaste"
 4. Click on the pencil icon next to the current binding and enter your preferred shortcut
 
 ### Commands
 
-- `smartpaste.smartPaste`: Initiate the smart paste process
+- `smoothpaste.smoothPaste`: Initiate the smooth paste process
 
 ## Extension Settings
 
 This extension contributes the following settings:
 
-* `smartPaste.apiKey`: API Key for OpenAI (required)
-* `smartPaste.baseURL`: Base URL for OpenAI API (default: "https://api.openai.com/v1")
-* `smartPaste.model`: OpenAI model to use (default: "gpt-4o-mini")
+* `smoothPaste.apiKey`: API Key for OpenAI (required)
+* `smoothPaste.baseURL`: Base URL for OpenAI API (default: "https://api.openai.com/v1")
+* `smoothPaste.model`: OpenAI model to use (default: "gpt-4o-mini")
 
 To configure these settings:
 
 1. Open VSCode Settings (File > Preferences > Settings)
-2. Search for "SmartPaste"
+2. Search for "SmoothPaste"
 3. Enter your OpenAI API key in the "API Key" field
 4. Optionally, adjust the base URL and model as needed
 
 ## OpenRouter Support
 
-SmartPaste now supports OpenRouter, allowing you to use a variety of AI models beyond OpenAI's offerings.
+SmoothPaste now supports OpenRouter, allowing you to use a variety of AI models beyond OpenAI's offerings.
 
 To use OpenRouter:
 
 1. Sign up for an account at [OpenRouter](https://openrouter.ai/)
 2. Obtain your API key from OpenRouter
-3. Update your SmartPaste settings:
-   - Set `smartPaste.baseURL` to "https://openrouter.ai/api/v1"
-   - Set `smartPaste.apiKey` to your OpenRouter API key
-   - Choose your preferred model and set it in `smartPaste.model`
+3. Update your SmoothPaste settings:
+   - Set `smoothPaste.baseURL` to "https://openrouter.ai/api/v1"
+   - Set `smoothPaste.apiKey` to your OpenRouter API key
+   - Choose your preferred model and set it in `smoothPaste.model`
 
 Example configuration for using OpenRouter:
 
 ```json
 {
-  "smartPaste.baseURL": "https://openrouter.ai/api/v1",
-  "smartPaste.apiKey": "your-openrouter-api-key",
-  "smartPaste.model": "openai/gpt-3.5-turbo"
+  "smoothPaste.baseURL": "https://openrouter.ai/api/v1",
+  "smoothPaste.apiKey": "your-openrouter-api-key",
+  "smoothPaste.model": "openai/gpt-3.5-turbo"
 }
 ```
 
@@ -104,7 +149,7 @@ Note: Available models may vary. Check OpenRouter's documentation for the latest
 
 ### 1.0.0
 
-Initial release of SmartPaste
+Initial release of SmoothPaste
 
 ## Contributing
 
@@ -122,6 +167,6 @@ Distributed under the MIT License. See `LICENSE` file for more information.
 
 ---
 
-For more information, please visit the [GitHub repository](https://github.com/jonigata/SmartPaste).
+For more information, please visit the [GitHub repository](https://github.com/jonigata/SmoothPaste).
 
-**Enjoy using SmartPaste!**
+**Enjoy using SmoothPaste!**

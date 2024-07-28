@@ -1,6 +1,6 @@
 {
-  "name": "smartpaste",
-  "displayName": "smartPaste",
+  "name": "smoothpaste",
+  "displayName": "smoothPaste",
   "description": "Paste using AI",
   "version": "0.0.1",
   "engines": {
@@ -14,42 +14,42 @@
   "contributes": {
     "commands": [
       {
-        "command": "smartpaste.smartPaste",
-        "title": "Smart Paste"
+        "command": "smoothpaste.smoothPaste",
+        "title": "Smooth Paste"
       },
       {
-        "command": "smartpaste.applyDiff",
-        "title": "SmartPaste: Apply Diff",
+        "command": "smoothpaste.applyDiff",
+        "title": "SmoothPaste: Apply Diff",
         "enablement": "never"
       },
       {
-        "command": "smartpaste.applyAllDiff",
-        "title": "SmartPaste: Apply All Diff",
+        "command": "smoothpaste.applyAllDiff",
+        "title": "SmoothPaste: Apply All Diff",
         "enablement": "never"
       }
     ],
     "keybindings": [
       {
-        "command": "smartpaste.smartPaste",
+        "command": "smoothpaste.smoothPaste",
         "key": "ctrl+shift+alt+v",
         "mac": "cmd+shift+alt+v",
         "when": "editorTextFocus"
       }
     ],
     "configuration": {
-      "title": "smartPaste",
+      "title": "smoothPaste",
       "properties": {
-        "smartPaste.apiKey": {
+        "smoothPaste.apiKey": {
           "type": "string",
           "default": "",
           "description": "API Key for OpenAI"
         },
-        "smartPaste.baseURL": {
+        "smoothPaste.baseURL": {
           "type": "string",
           "default": "https://api.openai.com/v1",
           "description": "Base URL for OpenAI API"
         },
-        "smartPaste.model": {
+        "smoothPaste.model": {
           "type": "string",
           "default": "gpt-4o-mini",
           "description": "OpenAI model to use"
@@ -69,7 +69,9 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "vsce:package": "npx vsce package",
+    "vsce:publish": "npx vsce publish"
   },
   "devDependencies": {
     "@types/diff": "^5.2.1",
@@ -88,6 +90,12 @@
   "dependencies": {
     "diff": "^5.2.0",
     "openai": "^4.53.0",
-    "typai": "^0.0.8"
-  }
+    "typai": "^0.0.8",
+    "vsce": "^2.15.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jonigata/SmoothPaste"
+  },
+  "publisher": "jonigata"
 }
