@@ -42,17 +42,22 @@
         "smoothPaste.apiKey": {
           "type": "string",
           "default": "",
-          "description": "API Key for OpenAI"
+          "description": "API Key for OpenAI."
         },
         "smoothPaste.baseURL": {
           "type": "string",
           "default": "https://api.openai.com/v1",
-          "description": "Base URL for OpenAI API"
+          "description": "Base URL for OpenAI API. If you want to use openrouter, set this to 'https://openrouter.ai/api/v1'."
         },
         "smoothPaste.model": {
           "type": "string",
           "default": "gpt-4o-mini",
           "description": "OpenAI model to use"
+        },
+        "smoothPaste.patchMode": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Use 'diff -u' mode. This mode is fast, but it only works accurately with models like openai/gpt-4 and anthropic/claude-3.5-sonnet. We strongly recommend 'anthorpic/claude-3.5-sonnet'. gpt-4o or gpt-4o-mini may not work well."
         }
       }
     }

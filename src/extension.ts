@@ -5,6 +5,8 @@ import { DiffCodeLensProvider } from "./codeLens";
 import { DiffBlockCursors } from "./diffBlock";
 import { CursorManager } from "./cursor";
 import { showNotificationWithProgress } from "./progress";
+import { parsePatch, applyPatch } from "diff";
+
 
 export function activate(context: vscode.ExtensionContext) {
   let diffBlockCursors: DiffBlockCursors[] = [];
@@ -54,30 +56,58 @@ export function activate(context: vscode.ExtensionContext) {
       try {
         const originalDocument = editor.document.getText();
         const clipboardContent = await vscode.env.clipboard.readText();
+        const config = vscode.workspace.getConfiguration('smoothPaste');
 
-        const mergedText = await showNotificationWithProgress(
+        const apiKey = config.get<string>('apiKey') ?? "";
+        const baseURL = config.get<string>('baseURL') ?? "https://api.openai.com/v1";
+        const model = config.get<string>('model') ?? "gpt-4o-mini";
+        const usePatch = config.get<boolean>('patchMode') ?? false;
+
+        const aiResult = await showNotificationWithProgress(
           `AI merging...`, 
           async (progress: vscode.Progress<{ message?: string; increment?: number }>, token: vscode.CancellationToken) => {
             return postToAi(
-              vscode.workspace.getConfiguration('smoothPaste'), 
+              baseURL,
+              apiKey,
+              model,
+              usePatch,
               originalDocument, 
               clipboardContent);
           });
+        console.log("================ aiResult");
+        console.log(aiResult);
+        console.log("usePatch", usePatch);
 
-        const blocks = makeDiff(originalDocument, mergedText!);
-        const patchedText = makePatchedText(blocks);
+        let mergedText: string | null = null;
+        if (usePatch) {
+          console.log("patchMode");
+          const patch = parsePatch(aiResult);
+          console.log(patch);
+          const applyPatchResult = applyPatch(originalDocument, [patch[0]]);
+          console.log("applyPatchResult", applyPatchResult);
+          mergedText = applyPatchResult ? applyPatchResult : null;
+        } else {
+          mergedText = aiResult;
+        }
 
-        // マージされたテキストでドキュメントを置き換え
-        const fullRange = new vscode.Range(
-          editor.document.positionAt(0),
-          editor.document.positionAt(editor.document.getText().length)
-        );
-        await editor.edit(editBuilder => {
-          editBuilder.replace(fullRange, patchedText);
-        });
-        updateDiffBlockCursors(editor);
+        if (mergedText) {
+          const blocks = makeDiff(originalDocument, mergedText);
+          const patchedText = makePatchedText(blocks);
 
-        vscode.window.showInformationMessage("Content merged successfully");
+          // マージされたテキストでドキュメントを置き換え
+          const fullRange = new vscode.Range(
+            editor.document.positionAt(0),
+            editor.document.positionAt(editor.document.getText().length)
+          );
+          await editor.edit(editBuilder => {
+            editBuilder.replace(fullRange, patchedText);
+          });
+          updateDiffBlockCursors(editor);
+
+          vscode.window.showInformationMessage("Content merged successfully");
+        } else {
+          vscode.window.showInformationMessage("Content merging failed");
+        }
       } catch (error) {
         console.error('Error in smoothPaste:', error);
         let errorMessage = 'An unexpected error occurred';
